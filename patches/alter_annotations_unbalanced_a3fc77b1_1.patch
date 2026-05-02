@@ -1,0 +1,33 @@
+From a3fc77b10000000000000000000000000000001 Mon Sep 17 00:00:00 2001
+From: ETNA <etna@example.com>
+Date: Thu, 1 Jan 2026 00:00:00 +0000
+Subject: [PATCH] Fix alterAnnotationsS to remove pops for removed pushes
+
+Synthesised from upstream commit 5729c19b2a31 ("Fix alterAnnotationsS
+removing only pushes, but not pops"). Reverse-applying this patch
+reintroduces the bug where, for any annotation mapped to `Nothing` by
+the user-supplied function, the corresponding push is dropped from the
+output stream but the matching pop is *not* — so a subsequent SAnnPop
+finds an empty stack and triggers `panicPeekedEmpty`. This affects
+`unAnnotateS` (which is `alterAnnotationsS (const Nothing)`) on every
+annotated layout.
+
+---
+ prettyprinter/src/Prettyprinter/Internal.hs | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/prettyprinter/src/Prettyprinter/Internal.hs b/prettyprinter/src/Prettyprinter/Internal.hs
+index 0000000..0000000 100755
+--- a/prettyprinter/src/Prettyprinter/Internal.hs
++++ b/prettyprinter/src/Prettyprinter/Internal.hs
+@@ -1581,7 +1581,7 @@ alterAnnotationsS re = go []
+         SText l t rest    -> SText l t (go stack rest)
+         SLine l rest      -> SLine l (go stack rest)
+         SAnnPush ann rest -> case re ann of
+-            Nothing   -> go stack rest
++            Nothing   -> go (Remove:stack) rest
+             Just ann' -> SAnnPush ann' (go (DontRemove:stack) rest)
+         SAnnPop rest      -> case stack of
+             []                -> panicPeekedEmpty
+--
+2.30.0

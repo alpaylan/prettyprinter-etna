@@ -1,10 +1,18 @@
 -- http://cabal.readthedocs.io/en/latest/nix-local-build-overview.html
+--
+-- ETNA workload: narrowed to the `prettyprinter` library + `etna/` runner.
+-- The other sub-packages of the upstream monorepo are left out of the build
+-- so we don't drag their toolchain constraints into the runner.
+
+with-compiler: ghc-9.6.6
 
 packages: prettyprinter
-        , prettyprinter-ansi-terminal
-        , prettyprinter-compat-wl-pprint
-        , prettyprinter-compat-ansi-wl-pprint
-        , prettyprinter-convert-ansi-wl-pprint
-        , prettyprinter-compat-annotated-wl-pprint
-tests: true
-benchmarks: true
+        , etna/
+
+-- We disable upstream tests/benchmarks (they often pin older toolchains
+-- or extra deps); etna's test-suite is enabled per-package below.
+tests: false
+benchmarks: false
+
+package etna-runner
+    tests: true

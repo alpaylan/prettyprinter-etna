@@ -1,0 +1,35 @@
+From e7d52f8a0000000000000000000000000000001 Mon Sep 17 00:00:00 2001
+From: ETNA <etna@example.com>
+Date: Thu, 1 Jan 2026 00:00:00 +0000
+Subject: [PATCH] removeTrailingWhitespace: drop indentation on intermediate blank lines
+
+Synthesised from the spirit of upstream commits 9ea5da0a4cd0 ("Fix
+stripping of empty lines for real this time :-)") and 6ffbc8912c24
+("Fix #93: rTW restores indentation in the wrong spot"). The original
+patches targeted the older `commitSpaces` shape; the modern code uses
+`commitWhitespace`/`prependEmptyLines`. Reverse-applying this patch
+reintroduces an analogous bug: `prependEmptyLines` propagates the
+withheld indentation onto every intermediate blank line instead of
+emitting `SLine 0`. Any document that pushes through
+`removeTrailingWhitespace` and contains two or more consecutive
+hardlines after an indent then re-grows trailing whitespace.
+
+---
+ prettyprinter/src/Prettyprinter/Internal.hs | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/prettyprinter/src/Prettyprinter/Internal.hs b/prettyprinter/src/Prettyprinter/Internal.hs
+index 0000000..0000000 100755
+--- a/prettyprinter/src/Prettyprinter/Internal.hs
++++ b/prettyprinter/src/Prettyprinter/Internal.hs
+@@ -1740,7 +1740,7 @@ removeTrailingWhitespace = go (RecordedWhitespace [] 0)
+                    in prependEmptyLines is' end
+
+     prependEmptyLines :: [Int] -> SimpleDocStream ann -> SimpleDocStream ann
+-    prependEmptyLines is sds0 = foldr (\i sds -> SLine i sds) sds0 is
++    prependEmptyLines is sds0 = foldr (\_ sds -> SLine 0 sds) sds0 is
+
+     go :: WhitespaceStrippingState -> SimpleDocStream ann -> SimpleDocStream ann
+     -- We do not strip whitespace inside annotated documents, since it might
+--
+2.30.0
