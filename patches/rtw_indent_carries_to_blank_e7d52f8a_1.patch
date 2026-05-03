@@ -1,13 +1,13 @@
 diff --git a/prettyprinter/src/Prettyprinter/Internal.hs b/prettyprinter/src/Prettyprinter/Internal.hs
-index 6297c4f..39dd887 100755
+index 39dd887..6297c4f 100755
 --- a/prettyprinter/src/Prettyprinter/Internal.hs
 +++ b/prettyprinter/src/Prettyprinter/Internal.hs
 @@ -1740,7 +1740,7 @@ removeTrailingWhitespace = go (RecordedWhitespace [] 0)
                     in prependEmptyLines is' end
  
      prependEmptyLines :: [Int] -> SimpleDocStream ann -> SimpleDocStream ann
--    prependEmptyLines is sds0 = foldr (\_ sds -> SLine 0 sds) sds0 is
-+    prependEmptyLines is sds0 = foldr (\i sds -> SLine i sds) sds0 is
+-    prependEmptyLines is sds0 = foldr (\i sds -> SLine i sds) sds0 is
++    prependEmptyLines is sds0 = foldr (\_ sds -> SLine 0 sds) sds0 is
  
      go :: WhitespaceStrippingState -> SimpleDocStream ann -> SimpleDocStream ann
      -- We do not strip whitespace inside annotated documents, since it might
