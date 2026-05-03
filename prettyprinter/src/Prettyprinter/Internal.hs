@@ -1740,7 +1740,7 @@ removeTrailingWhitespace = go (RecordedWhitespace [] 0)
                    in prependEmptyLines is' end
 
     prependEmptyLines :: [Int] -> SimpleDocStream ann -> SimpleDocStream ann
-    prependEmptyLines is sds0 = foldr (\_ sds -> SLine 0 sds) sds0 is
+    prependEmptyLines is sds0 = foldr (\i sds -> SLine i sds) sds0 is
 
     go :: WhitespaceStrippingState -> SimpleDocStream ann -> SimpleDocStream ann
     -- We do not strip whitespace inside annotated documents, since it might

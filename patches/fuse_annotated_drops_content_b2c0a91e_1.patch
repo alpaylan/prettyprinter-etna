@@ -1,32 +1,13 @@
-From b2c0a91e0000000000000000000000000000001 Mon Sep 17 00:00:00 2001
-From: ETNA <etna@example.com>
-Date: Thu, 1 Jan 2026 00:00:00 +0000
-Subject: [PATCH] Fix fusion of annotated documents
-
-Synthesised from upstream commit ff555e19b7b1 ("Fix fusion of annotated
-documents (#114)"). Reverse-applying this patch reintroduces the bug
-where `fuse` for an `Annotated _ Empty` discards the annotation entirely
-(returning `Empty`), and otherwise also drops fusion inside annotations.
-Renderers that rely on annotation push/pop markers (e.g. terminal
-colouring, structured tree rendering) lose annotation boundaries on
-documents containing empty annotated children.
-
----
- prettyprinter/src/Prettyprinter/Internal.hs | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
 diff --git a/prettyprinter/src/Prettyprinter/Internal.hs b/prettyprinter/src/Prettyprinter/Internal.hs
-index 0000000..0000000 100755
+index 6297c4f..75fc82f 100755
 --- a/prettyprinter/src/Prettyprinter/Internal.hs
 +++ b/prettyprinter/src/Prettyprinter/Internal.hs
 @@ -1663,7 +1663,7 @@ fuse depth = go
          Nest 0 x         -> go x
          Nest i x         -> Nest i (go x)
-
--        Annotated _ Empty -> Empty
-+        Annotated ann x -> Annotated ann (go x)
-
+ 
+-        Annotated ann x -> Annotated ann (go x)
++        Annotated _ Empty -> Empty
+ 
          FlatAlt x1 x2 -> FlatAlt (go x1) (go x2)
          Union x1 x2   -> Union (go x1) (go x2)
---
-2.30.0

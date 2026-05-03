@@ -1,32 +1,13 @@
-From d4cd9e1f0000000000000000000000000000001 Mon Sep 17 00:00:00 2001
-From: ETNA <etna@example.com>
-Date: Thu, 1 Jan 2026 00:00:00 +0000
-Subject: [PATCH] Compute ribbon width with floor instead of round
-
-Synthesised from upstream commit f289c1782e ("Compute ribbon width with
-`floor` instead of `round` (#160)"). The hunk is rebased onto the
-modern Prettyprinter.Internal module path; the historical patch was
-against Data/Text/Prettyprint/Doc/Internal.hs. Reverse-applying this
-patch reintroduces the bug where the ribbon width is rounded
-(half-to-even) instead of floored, so half-fractional ribbon
-fractions over-extend the ribbon by one column.
-
----
- prettyprinter/src/Prettyprinter/Internal.hs | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
 diff --git a/prettyprinter/src/Prettyprinter/Internal.hs b/prettyprinter/src/Prettyprinter/Internal.hs
-index 0000000..0000000 100755
+index 6297c4f..6c1c4cc 100755
 --- a/prettyprinter/src/Prettyprinter/Internal.hs
 +++ b/prettyprinter/src/Prettyprinter/Internal.hs
 @@ -1894,7 +1894,7 @@ remainingWidth lineLength ribbonFraction lineIndent currentColumn =
      columnsLeftInLine = lineLength - currentColumn
      columnsLeftInRibbon = lineIndent + ribbonWidth - currentColumn
      ribbonWidth =
--        (max 0 . min lineLength . round)
-+        (max 0 . min lineLength . floor)
+-        (max 0 . min lineLength . floor)
++        (max 0 . min lineLength . round)
              (fromIntegral lineLength * ribbonFraction)
-
+ 
  -- $ Test to avoid surprising behaviour
---
-2.30.0
